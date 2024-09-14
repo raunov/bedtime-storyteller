@@ -29,7 +29,8 @@ translations = {
         "your_story": "🎉 Your Personalized Bedtime Story",
         "instructions": "👈 Enter the details in the sidebar and click 'Generate Story' to create your personalized bedtime story.",
         "values_to_teach": "📚 Values to teach (comma-separated)",
-        "story_values": "Values taught in this story:"
+        "story_values": "Values taught in this story:",
+        "buy_coffee": "💛 Buy Me a Coffee"
     },
     "Español": {
         "flag": "https://flagcdn.com/w40/es.png",
@@ -47,7 +48,8 @@ translations = {
         "your_story": "🎉 Tu Cuento Personalizado para Dormir",
         "instructions": "👈 Ingresa los detalles en la barra lateral y haz clic en 'Generar Cuento' para crear tu cuento personalizado para dormir.",
         "values_to_teach": "📚 Valores a enseñar (separados por comas)",
-        "story_values": "Valores enseñados en esta historia:"
+        "story_values": "Valores enseñados en esta historia:",
+        "buy_coffee": "💛 Comprame un café"
     },
     "Eesti": {
         "flag": "https://flagcdn.com/w40/ee.png",
@@ -65,7 +67,8 @@ translations = {
         "your_story": "🎉 Sinu Personaliseeritud Unejutt",
         "instructions": "👈 Sisesta üksikasjad külgribal ja klõpsa 'Loo Jutt', et luua oma personaliseeritud unejutt.",
         "values_to_teach": "📚 Õpetatavad väärtused (eraldatud komadega)",
-        "story_values": "Selles loos õpetatud väärtused:"
+        "story_values": "Selles loos õpetatud väärtused:",
+        "buy_coffee": "💛 Osta mulle kohvi"
     },
     "Latviešu": {
         "flag": "https://flagcdn.com/w40/lv.png",
@@ -83,7 +86,8 @@ translations = {
         "your_story": "🎉 Jūsu Personalizētā Vakara Pasaka",
         "instructions": "👈 Ievadiet detaļas sānu joslā un noklikšķiniet uz 'Ģenerēt Stāstu', lai izveidotu savu personalizēto vakara pasaku.",
         "values_to_teach": "📚 Vērtības, ko mācīt (atdalītas ar komatu)",
-        "story_values": "Šajā stāstā mācītās vērtības:"
+        "story_values": "Šajā stāstā mācītās vērtības:",
+        "buy_coffee": "💛 Nopirkt man kafiju"
     },
     "Suomi": {
         "flag": "https://flagcdn.com/w40/fi.png",
@@ -101,7 +105,8 @@ translations = {
         "your_story": "🎉 Sinun Personoitu Iltasatusi",
         "instructions": "👈 Syötä tiedot sivupalkissa ja napsauta 'Luo Tarina' luodaksesi personoidun iltasatusi.",
         "values_to_teach": "📚 Opetettavat arvot (erota pilkulla)",
-        "story_values": "Tässä tarinassa opetetut arvot:"
+        "story_values": "Tässä tarinassa opetetut arvot:",
+        "buy_coffee": "💛 Osta minulle kahvi"
     },
     "Русский": {
         "flag": "https://flagcdn.com/w40/ru.png",
@@ -119,7 +124,8 @@ translations = {
         "your_story": "🎉 Ваша Персонализированная Сказка на Ночь",
         "instructions": "👈 Введите детали в боковой панели и нажмите 'Создать Сказку', чтобы создать свою персонализированную сказку на ночь.",
         "values_to_teach": "📚 Ценности для обучения (разделенные запятыми)",
-        "story_values": "Ценности, преподанные в этой истории:"
+        "story_values": "Ценности, преподанные в этой истории:",
+        "buy_coffee": "💛 Купи мне кофе"
     }
 }
 
@@ -202,6 +208,9 @@ with st.sidebar:
     values_to_teach = st.text_input(get_text("values_to_teach"))
 
     generate_button = st.button(get_text("generate_button"))
+
+    # Buy Me a Coffee button
+    st.markdown(f"[{get_text('buy_coffee')}](https://www.buymeacoffee.com/YourUsername)", unsafe_allow_html=True)
 
 story_details = f"""
 Activities, toys, and events: {activities_and_toys}
