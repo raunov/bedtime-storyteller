@@ -1,4 +1,4 @@
-# Bedtime Story Generator
+# Bedtime Storyteller
 
 🌙 A multilingual, personalized bedtime story generator powered by OpenAI's GPT-4.
 
@@ -19,7 +19,7 @@ This Streamlit app creates customized bedtime stories for children based on thei
 
 1. Clone this repository:
    ```
-   git clone https://github.com/your-username/bedtime-story-generator.git
+   git clone https://github.com/raunov/bedtime-storyteller.git
    cd bedtime-story-generator
    ```
 
@@ -54,7 +54,7 @@ Contributions to improve the Bedtime Story Generator are welcome! Please feel fr
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source and available under the [MIT License](https://opensource.org/licenses/MIT).
 
 ## Acknowledgements
 
