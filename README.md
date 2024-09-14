@@ -33,6 +33,8 @@ This Streamlit app creates customized bedtime stories for children based on thei
    - Add your OpenAI API key to this file:
      ```
      OPENAI_API_KEY = "your-api-key-here"
+     ANTHROPIC_API_KEY = "your-api-key-here"
+     MODEL = "claude-3-5-sonnet-20240620" or "gpt-4o" or "gpt-4o-mini"
      ```
 
 4. Run the Streamlit app:
@@ -59,5 +61,5 @@ This project is open source and available under the [MIT License](https://openso
 ## Acknowledgements
 
 - OpenAI for providing the GPT-4 API
+- Anthropic for providing the Claude API
 - Streamlit for the web app framework
-- Flag CDN for providing flag images

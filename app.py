@@ -1,134 +1,133 @@
 import streamlit as st
 import openai
+import anthropic  # New import for Anthropic's API
+import os
 
 # Set page config
 st.set_page_config(
     page_title="Bedtime Story Generator",
-    page_icon="🌙",
-    layout="wide"
+    page_icon="🌙" 
 )
 
-# Set up OpenAI API key
+# Set up API keys
 openai.api_key = st.secrets["OPENAI_API_KEY"]
+anthropic_api_key = st.secrets["ANTHROPIC_API_KEY"]  # New line for Anthropic API key
+
+# Get the model from secrets.toml
+selected_model = st.secrets["MODEL"]
+
 
 # Define translations with flag image URLs
 translations = {
     "English": {
-        "flag": "https://flagcdn.com/w40/gb.png",
-        "title": "🌙 Personalized Bedtime Story Generator",
+        "title": "🌙 Bedtime Storyteller",
         "story_settings": "📚 Story Settings",
-        "language_select": "🌍 Select your preferred language",
+        "language_select": "🌍 Language",
         "num_children": "👧👦 Number of children",
         "child": "Child",
         "name": "Name of child",
         "age": "Age",
-        "activities_and_toys": "🧸🎨 Favorite toys, activities, and today's events (separate with commas)",
+        "activities_and_toys": "🧸🎨 Favorite toys, activities, and today's events",
         "activities_help": "E.g., teddy bear, coloring books, played in the park, had ice cream",
         "generate_button": "✨ Generate Story",
         "creating_story": "🖊️ Creating your magical story...",
-        "your_story": "🎉 Your Personalized Bedtime Story",
+        "your_story": "🌟 Your Personalized Bedtime Story",
         "instructions": "👈 Enter the details in the sidebar and click 'Generate Story' to create your personalized bedtime story.",
-        "values_to_teach": "📚 Values to teach (comma-separated)",
-        "story_values": "Values taught in this story:",
+        "values_to_teach": "📚 Values or lessons to teach",
+        "story_values": "Lessons taught in the story:",
         "buy_coffee": "💛 Buy Me a Coffee"
     },
     "Español": {
-        "flag": "https://flagcdn.com/w40/es.png",
-        "title": "🌙 Generador de Cuentos Personalizados para Dormir",
+        "title": "🌙 Narrador de Cuentos para Dormir",
         "story_settings": "📚 Configuración del Cuento",
-        "language_select": "🌍 Selecciona tu idioma preferido",
+        "language_select": "🌍 Idioma",
         "num_children": "👧👦 Número de niños",
         "child": "Niño",
         "name": "Nombre del niño",
         "age": "Edad",
-        "activities_and_toys": "🧸🎨 Juguetes favoritos, actividades y eventos de hoy (separar con comas)",
-        "activities_help": "Ej., oso de peluche, libros para colorear, jugó en el parque, comió helado",
+        "activities_and_toys": "🧸🎨 Juguetes favoritos, actividades y eventos de hoy",
+        "activities_help": "Por ejemplo, oso de peluche, libros para colorear, jugó en el parque, comió helado",
         "generate_button": "✨ Generar Cuento",
         "creating_story": "🖊️ Creando tu cuento mágico...",
-        "your_story": "🎉 Tu Cuento Personalizado para Dormir",
+        "your_story": "🌟 Tu Cuento Personalizado para Dormir",
         "instructions": "👈 Ingresa los detalles en la barra lateral y haz clic en 'Generar Cuento' para crear tu cuento personalizado para dormir.",
-        "values_to_teach": "📚 Valores a enseñar (separados por comas)",
-        "story_values": "Valores enseñados en esta historia:",
-        "buy_coffee": "💛 Comprame un café"
+        "values_to_teach": "📚 Valores o lecciones para enseñar",
+        "story_values": "Lecciones enseñadas en el cuento:",
+        "buy_coffee": "💛 Cómprame un Café"
     },
     "Eesti": {
-        "flag": "https://flagcdn.com/w40/ee.png",
-        "title": "🌙 Personaliseeritud Unejutu Generator",
+        "title": "🌙 Unejutuvestja",
         "story_settings": "📚 Loo Seaded",
-        "language_select": "🌍 Vali oma eelistatud keel",
+        "language_select": "🌍 Keel",
         "num_children": "👧👦 Laste arv",
         "child": "Laps",
         "name": "Lapse nimi",
         "age": "Vanus",
-        "activities_and_toys": "🧸🎨 Lemmikmänguasjad, tegevused ja tänased sündmused (eraldage komadega)",
+        "activities_and_toys": "🧸🎨 Lemmikmänguasjad, tegevused ja tänased sündmused",
         "activities_help": "Nt. kaisukaru, värvimisraamatud, mängis pargis, sõi jäätist",
         "generate_button": "✨ Loo Jutt",
         "creating_story": "🖊️ Loome sinu maagilist lugu...",
-        "your_story": "🎉 Sinu Personaliseeritud Unejutt",
+        "your_story": "🌟 Sinu Personaliseeritud Unejutt",
         "instructions": "👈 Sisesta üksikasjad külgribal ja klõpsa 'Loo Jutt', et luua oma personaliseeritud unejutt.",
-        "values_to_teach": "📚 Õpetatavad väärtused (eraldatud komadega)",
-        "story_values": "Selles loos õpetatud väärtused:",
+        "values_to_teach": "📚 Õpetatavad väärtused või õppetunnid",
+        "story_values": "Loos õpetatud õppetunnid:",
         "buy_coffee": "💛 Osta mulle kohvi"
     },
     "Latviešu": {
-        "flag": "https://flagcdn.com/w40/lv.png",
-        "title": "🌙 Personalizētu Vakara Pasaku Ģenerators",
+        "title": "🌙 Vakara Pasaku Stāstītājs",
         "story_settings": "📚 Stāsta Iestatījumi",
-        "language_select": "🌍 Izvēlieties vēlamo valodu",
+        "language_select": "🌍 Valoda",
         "num_children": "👧👦 Bērnu skaits",
         "child": "Bērns",
         "name": "Bērna vārds",
         "age": "Vecums",
-        "activities_and_toys": "🧸🎨 Mīļākās rotaļlietas, aktivitātes un šodienas notikumi (atdaliet ar komatu)",
-        "activities_help": "Piem., lācītis, krāsojamās grāmatas, spēlējās parkā, ēda saldējumu",
+        "activities_and_toys": "🧸🎨 Mīļākās rotaļlietas, aktivitātes un šodienas notikumi",
+        "activities_help": "Piemēram, lācītis, krāsojamās grāmatas, spēlējās parkā, ēda saldējumu",
         "generate_button": "✨ Ģenerēt Stāstu",
         "creating_story": "🖊️ Veidojam jūsu brīnumaino stāstu...",
-        "your_story": "🎉 Jūsu Personalizētā Vakara Pasaka",
+        "your_story": "🌟 Jūsu Personalizētā Vakara Pasaka",
         "instructions": "👈 Ievadiet detaļas sānu joslā un noklikšķiniet uz 'Ģenerēt Stāstu', lai izveidotu savu personalizēto vakara pasaku.",
-        "values_to_teach": "📚 Vērtības, ko mācīt (atdalītas ar komatu)",
-        "story_values": "Šajā stāstā mācītās vērtības:",
-        "buy_coffee": "💛 Nopirkt man kafiju"
+        "values_to_teach": "📚 Vērtības vai mācības, ko pasniegt",
+        "story_values": "Stāstā mācītās mācības:",
+        "buy_coffee": "💛 Nopērc man kafiju"
     },
     "Suomi": {
-        "flag": "https://flagcdn.com/w40/fi.png",
-        "title": "🌙 Personoitu Iltasatugeneraattori",
+        "title": "🌙 Iltasadun Kertoja",
         "story_settings": "📚 Tarinan Asetukset",
-        "language_select": "🌍 Valitse haluamasi kieli",
+        "language_select": "🌍 Kieli",
         "num_children": "👧👦 Lasten lukumäärä",
         "child": "Lapsi",
         "name": "Lapsen nimi",
         "age": "Ikä",
-        "activities_and_toys": "🧸🎨 Lempilelut, aktiviteetit ja päivän tapahtumat (erota pilkulla)",
+        "activities_and_toys": "🧸🎨 Lempilelut, aktiviteetit ja päivän tapahtumat",
         "activities_help": "Esim. nalle, värityskirjat, leikki puistossa, söi jäätelöä",
         "generate_button": "✨ Luo Tarina",
         "creating_story": "🖊️ Luomme taianomaista tarinaasi...",
-        "your_story": "🎉 Sinun Personoitu Iltasatusi",
+        "your_story": "🌟 Sinun Personoitu Iltasatusi",
         "instructions": "👈 Syötä tiedot sivupalkissa ja napsauta 'Luo Tarina' luodaksesi personoidun iltasatusi.",
-        "values_to_teach": "📚 Opetettavat arvot (erota pilkulla)",
-        "story_values": "Tässä tarinassa opetetut arvot:",
+        "values_to_teach": "📚 Opetettavat arvot tai opetukset",
+        "story_values": "Tarinassa opetetut opetukset:",
         "buy_coffee": "💛 Osta minulle kahvi"
     },
     "Русский": {
-        "flag": "https://flagcdn.com/w40/ru.png",
-        "title": "🌙 Генератор Персонализированных Сказок на Ночь",
+        "title": "🌙 Рассказчик Сказок на Ночь",
         "story_settings": "📚 Настройки Сказки",
-        "language_select": "🌍 Выберите предпочитаемый язык",
+        "language_select": "🌍 Язык",
         "num_children": "👧👦 Количество детей",
         "child": "Ребенок",
         "name": "Имя ребенка",
         "age": "Возраст",
-        "activities_and_toys": "🧸🎨 Любимые игрушки, занятия и события сегодняшнего дня (разделите запятыми)",
+        "activities_and_toys": "🧸🎨 Любимые игрушки, занятия и события сегодняшнего дня",
         "activities_help": "Например, плюшевый мишка, раскраски, играл в парке, ел мороженое",
         "generate_button": "✨ Создать Сказку",
         "creating_story": "🖊️ Создаем вашу волшебную сказку...",
-        "your_story": "🎉 Ваша Персонализированная Сказка на Ночь",
+        "your_story": "🌟 Ваша Персонализированная Сказка на Ночь",
         "instructions": "👈 Введите детали в боковой панели и нажмите 'Создать Сказку', чтобы создать свою персонализированную сказку на ночь.",
-        "values_to_teach": "📚 Ценности для обучения (разделенные запятыми)",
-        "story_values": "Ценности, преподанные в этой истории:",
+        "values_to_teach": "📚 Ценности или уроки для обучения",
+        "story_values": "Уроки, преподанные в сказке:",
         "buy_coffee": "💛 Купи мне кофе"
     }
 }
-
 def get_text(key):
     return translations[st.session_state.language][key]
 
@@ -160,16 +159,30 @@ def generate_story(children_info, story_details, language):
     The story should be {complexity}, as the average age of the children is {avg_age:.1f} years old.
     Adjust the language, concepts, and storyline to be engaging and understandable for children of this age group."""
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=1000,
-        n=1,
-        stop=None,
-        temperature=0.7,
-    )
+    if selected_model == "gpt-4o" or selected_model == "gpt-4o-mini":
+        response = openai.ChatCompletion.create(
+            model=selected_model,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=1000,
+            n=1,
+            stop=None,
+            temperature=0.7,
+        )
+        return response.choices[0].message.content
+    elif selected_model == "claude-3-5-sonnet-20240620":
+        client = anthropic.Anthropic(api_key=anthropic_api_key)
+        response = client.messages.create(
+            model="claude-3-5-sonnet-20240620",
+            max_tokens=1000,
+            temperature=0.7,
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+        )
+        return response.content[0].text
+    else:
+        raise ValueError(f"Unsupported model: {selected_model}")
 
-    return response.choices[0].message.content
 
 # Initialize session state for language
 if 'language' not in st.session_state:
@@ -177,7 +190,7 @@ if 'language' not in st.session_state:
 
 # Language selection using selectbox
 selected_language = st.sidebar.selectbox(
-    "Select your language / Selecciona tu idioma / Vali oma keel",
+    get_text("language_select"),
     options=list(translations.keys()),
     index=list(translations.keys()).index(st.session_state.language)
 )
@@ -185,6 +198,10 @@ selected_language = st.sidebar.selectbox(
 if selected_language != st.session_state.language:
     st.session_state.language = selected_language
     st.experimental_rerun()
+
+# Add header image
+image_path = os.path.join("static", "images", "header.png")
+st.image(image_path, use_column_width=True)
 
 st.title(get_text("title"))
 
@@ -209,9 +226,6 @@ with st.sidebar:
 
     generate_button = st.button(get_text("generate_button"))
 
-    # Buy Me a Coffee button
-    st.markdown(f"[{get_text('buy_coffee')}](https://buymeacoffee.com/raunou)", unsafe_allow_html=True)
-
 story_details = f"""
 Activities, toys, and events: {activities_and_toys}
 Values to teach: {values_to_teach}
@@ -234,3 +248,15 @@ if generate_button:
             st.write(f"• {value.strip()}")
 else:
     st.write(get_text("instructions"))
+
+# Buy Me a Coffee button
+st.markdown(
+    f"""
+    <div style="position: fixed; bottom: 10px; right: 10px;">
+        <a href="https://buymeacoffee.com/raunou" target="_blank">
+            {get_text('buy_coffee')}
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
