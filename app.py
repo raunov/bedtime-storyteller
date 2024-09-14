@@ -35,7 +35,7 @@ translations = {
         "instructions": "👈 Enter the details in the sidebar and click 'Generate Story' to create your personalized bedtime story.",
         "values_to_teach": "📚 Values or lessons to teach",
         "story_values": "Lessons taught in the story:",
-        "buy_coffee": "💛 Buy Me a Coffee"
+        "buy_coffee": "Buy Me a Coffee"
     },
     "Español": {
         "title": "🌙 Narrador de Cuentos para Dormir",
@@ -53,7 +53,7 @@ translations = {
         "instructions": "👈 Ingresa los detalles en la barra lateral y haz clic en 'Generar Cuento' para crear tu cuento personalizado para dormir.",
         "values_to_teach": "📚 Valores o lecciones para enseñar",
         "story_values": "Lecciones enseñadas en el cuento:",
-        "buy_coffee": "💛 Cómprame un Café"
+        "buy_coffee": "Cómprame un Café"
     },
     "Eesti": {
         "title": "🌙 Unejutuvestja",
@@ -71,7 +71,7 @@ translations = {
         "instructions": "👈 Sisesta üksikasjad külgribal ja klõpsa 'Loo Jutt', et luua oma personaliseeritud unejutt.",
         "values_to_teach": "📚 Õpetatavad väärtused või õppetunnid",
         "story_values": "Loos õpetatud õppetunnid:",
-        "buy_coffee": "💛 Osta mulle kohvi"
+        "buy_coffee": "Osta mulle tass kohvi"
     },
     "Latviešu": {
         "title": "🌙 Vakara Pasaku Stāstītājs",
@@ -89,7 +89,7 @@ translations = {
         "instructions": "👈 Ievadiet detaļas sānu joslā un noklikšķiniet uz 'Ģenerēt Stāstu', lai izveidotu savu personalizēto vakara pasaku.",
         "values_to_teach": "📚 Vērtības vai mācības, ko pasniegt",
         "story_values": "Stāstā mācītās mācības:",
-        "buy_coffee": "💛 Nopērc man kafiju"
+        "buy_coffee": "Nopērc man kafiju"
     },
     "Suomi": {
         "title": "🌙 Iltasadun Kertoja",
@@ -107,7 +107,7 @@ translations = {
         "instructions": "👈 Syötä tiedot sivupalkissa ja napsauta 'Luo Tarina' luodaksesi personoidun iltasatusi.",
         "values_to_teach": "📚 Opetettavat arvot tai opetukset",
         "story_values": "Tarinassa opetetut opetukset:",
-        "buy_coffee": "💛 Osta minulle kahvi"
+        "buy_coffee": "Osta minulle kahvi"
     },
     "Русский": {
         "title": "🌙 Рассказчик Сказок на Ночь",
@@ -125,7 +125,7 @@ translations = {
         "instructions": "👈 Введите детали в боковой панели и нажмите 'Создать Сказку', чтобы создать свою персонализированную сказку на ночь.",
         "values_to_teach": "📚 Ценности или уроки для обучения",
         "story_values": "Уроки, преподанные в сказке:",
-        "buy_coffee": "💛 Купи мне кофе"
+        "buy_coffee": "Купи мне кофе"
     }
 }
 def get_text(key):
@@ -248,14 +248,11 @@ if generate_button:
             st.write(f"• {value.strip()}")
 else:
     st.write(get_text("instructions"))
-
 # Buy Me a Coffee button
 st.markdown(
     f"""
-    <div style="position: fixed; bottom: 10px; right: 10px;">
-        <a href="https://buymeacoffee.com/raunou" target="_blank">
-            {get_text('buy_coffee')}
-        </a>
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="https://www.buymeacoffee.com/raunou"><img src="https://img.buymeacoffee.com/button-api/?text={get_text('buy_coffee')}&emoji=☕&slug=raunou&button_colour=b89f00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
     </div>
     """,
     unsafe_allow_html=True
