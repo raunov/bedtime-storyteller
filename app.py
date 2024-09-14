@@ -210,7 +210,7 @@ with st.sidebar:
     generate_button = st.button(get_text("generate_button"))
 
     # Buy Me a Coffee button
-    st.markdown(f"[{get_text('buy_coffee')}](https://www.buymeacoffee.com/YourUsername)", unsafe_allow_html=True)
+    st.markdown(f"[{get_text('buy_coffee')}](https://buymeacoffee.com/raunou)", unsafe_allow_html=True)
 
 story_details = f"""
 Activities, toys, and events: {activities_and_toys}
