@@ -43,7 +43,7 @@ translations = {
         "rate_story": "Rate this story",
         "thank_you_rating": "Thank you for your rating!",
         "submit_rating": "Submit Rating",
-        "general_help_text": "📝 This app generates AI-powered bedtime stories based on your input. The stories are created in real-time and are not stored."
+        "general_help_text": "📝 This app generates AI-powered bedtime stories based on your input. The stories are unique, created in real-time and are not stored. Head to bed with a smile!"
     },
     "Español": {
         "title": "🌙 Narrador de Cuentos para Dormir",
@@ -65,7 +65,7 @@ translations = {
         "rate_story": "Califica esta historia",
         "thank_you_rating": "¡Gracias por tu calificación!",
         "submit_rating": "Enviar Calificación",
-        "general_help_text": "📝 Esta aplicación genera cuentos para dormir impulsados por IA basados en tu entrada. Las historias se crean en tiempo real y no se almacenan."
+        "general_help_text": "📝 Esta aplicación genera cuentos para dormir impulsados por IA basados en tu entrada. Las historias son únicas, creadas en tiempo real y no se almacenan. ¡Duerme con una sonrisa!"
     },
     "Eesti": {
         "title": "🌙 Unejutuvestja",
@@ -76,7 +76,7 @@ translations = {
         "name": "Lapse nimi",
         "age": "Vanus",
         "activities_and_toys": "🧸🎨 Lemmikmänguasjad, tegevused ja tänased sündmused",
-        "activities_help": "Nt. kaisukaru, värvimisraamatud, mängis pargis, sõi jäätist",
+        "activities_help": "Nt. kaisukaru Peeter, meeldivad puzled, mängisid pargis, sõi jäätist",
         "generate_button": "✨ Loo Jutt",
         "creating_story": "🖊️ Loome sinu maagilist lugu...",
         "your_story": "🌟 Sinu Personaliseeritud Unejutt",
@@ -87,7 +87,7 @@ translations = {
         "rate_story": "Hinda seda lugu",
         "thank_you_rating": "Täname tagasiside eest!",
         "submit_rating": "Esita Hinnang",
-        "general_help_text": "📝 See rakendus genereerib tehisintellekti abil unejutte vastavalt teie sisendile. Lood luuakse reaalajas ja neid ei salvestata."
+        "general_help_text": "📝 See rakendus genereerib tehisintellekti abil unejutte vastavalt teie sisendile. Lood on unikaalsed, need luuakse reaalajas ja neid ei salvestata. Head Und!"
     },
     "Latviešu": {
         "title": "🌙 Vakara Pasaku Stāstītājs",
@@ -109,7 +109,7 @@ translations = {
         "rate_story": "Vērtējiet šo stāstu",
         "thank_you_rating": "Paldies par jūsu vērtējumu!",
         "submit_rating": "Iesniegt Vērtējumu",
-        "general_help_text": "📝 Šī lietotne ģenerē mākslīgā intelekta radītus vakara stāstus, pamatojoties uz jūsu ievadi. Stāsti tiek veidoti reālajā laikā un netiek saglabāti."
+        "general_help_text": "📝 Šī lietotne ģenerē mākslīgā intelekta radītus vakara stāstus, pamatojoties uz jūsu ievadi. Stāsti ir unikāli, tiek veidoti reālajā laikā un netiek saglabāti. Iesiet mājās ar vienmērīgu smieklu!"
     },
     "Suomi": {
         "title": "🌙 Iltasadun Kertoja",
@@ -131,7 +131,7 @@ translations = {
         "rate_story": "Arvioi tämä tarina",
         "thank_you_rating": "Kiitos arvostelustasi!",
         "submit_rating": "Lähetä Arvostelu",
-        "general_help_text": "📝 Tämä sovellus luo tekoälyllä tuotettuja iltasatuja antamiesi tietojen perusteella. Tarinat luodaan reaaliajassa eikä niitä tallenneta."
+        "general_help_text": "📝 Tämä sovellus luo tekoälyllä tuotettuja iltasatuja antamiesi tietojen perusteella. Tarinat ovat unikkaita, luodaan reaaliajassa eikä niitä tallenneta. "
     },
     "Русский": {
         "title": "🌙 Рассказчик Сказок на Ночь",
@@ -153,7 +153,7 @@ translations = {
         "rate_story": "Оцените эту сказку",
         "thank_you_rating": "Спасибо за вашу оценку!",
         "submit_rating": "Отправить Оценку",
-        "general_help_text": "📝 Это приложение генерирует сказки на ночь с помощью ИИ на основе вашего ввода. Истории создаются в реальном времени и не сохраняются."
+        "general_help_text": "📝 Это приложение генерирует сказки на ночь с помощью ИИ на основе вашего ввода. Истории уникальны, создаются в реальном времени и не сохраняются. "
     }
 }
 
