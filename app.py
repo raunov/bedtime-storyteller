@@ -1,7 +1,9 @@
 import streamlit as st
 import openai
-import anthropic  # New import for Anthropic's API
+import anthropic
 import os
+from datetime import datetime
+from supabase import create_client, Client
 
 # Set page config
 st.set_page_config(
@@ -11,11 +13,13 @@ st.set_page_config(
 
 # Set up API keys
 openai.api_key = st.secrets["OPENAI_API_KEY"]
-anthropic_api_key = st.secrets["ANTHROPIC_API_KEY"]  # New line for Anthropic API key
+anthropic_api_key = st.secrets["ANTHROPIC_API_KEY"]
 
 # Get the model from secrets.toml
 selected_model = st.secrets["MODEL"]
 
+# Set up Supabase client
+supabase: Client = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 
 # Define translations with flag image URLs
 translations = {
@@ -35,7 +39,11 @@ translations = {
         "instructions": "👈 Enter the details in the sidebar and click 'Generate Story' to create your personalized bedtime story.",
         "values_to_teach": "📚 Values or lessons to teach",
         "story_values": "Lessons taught in the story:",
-        "buy_coffee": "Buy Me a Coffee"
+        "buy_coffee": "Buy Me a Coffee",
+        "rate_story": "Rate this story",
+        "thank_you_rating": "Thank you for your rating!",
+        "submit_rating": "Submit Rating",
+        "general_help_text": "📝 This app generates AI-powered bedtime stories based on your input. The stories are created in real-time and are not stored."
     },
     "Español": {
         "title": "🌙 Narrador de Cuentos para Dormir",
@@ -53,7 +61,11 @@ translations = {
         "instructions": "👈 Ingresa los detalles en la barra lateral y haz clic en 'Generar Cuento' para crear tu cuento personalizado para dormir.",
         "values_to_teach": "📚 Valores o lecciones para enseñar",
         "story_values": "Lecciones enseñadas en el cuento:",
-        "buy_coffee": "Cómprame un Café"
+        "buy_coffee": "Cómprame un Café",
+        "rate_story": "Califica esta historia",
+        "thank_you_rating": "¡Gracias por tu calificación!",
+        "submit_rating": "Enviar Calificación",
+        "general_help_text": "📝 Esta aplicación genera cuentos para dormir impulsados por IA basados en tu entrada. Las historias se crean en tiempo real y no se almacenan."
     },
     "Eesti": {
         "title": "🌙 Unejutuvestja",
@@ -70,8 +82,12 @@ translations = {
         "your_story": "🌟 Sinu Personaliseeritud Unejutt",
         "instructions": "👈 Sisesta üksikasjad külgribal ja klõpsa 'Loo Jutt', et luua oma personaliseeritud unejutt.",
         "values_to_teach": "📚 Õpetatavad väärtused või õppetunnid",
-        "story_values": "Loos õpetatud õppetunnid:",
-        "buy_coffee": "Osta mulle tass kohvi"
+        "story_values": "Loo õppetunnid:",
+        "buy_coffee": "Osta mulle tass kohvi",
+        "rate_story": "Hinda seda lugu",
+        "thank_you_rating": "Täname tagasiside eest!",
+        "submit_rating": "Esita Hinnang",
+        "general_help_text": "📝 See rakendus genereerib tehisintellekti abil unejutte vastavalt teie sisendile. Lood luuakse reaalajas ja neid ei salvestata."
     },
     "Latviešu": {
         "title": "🌙 Vakara Pasaku Stāstītājs",
@@ -89,7 +105,11 @@ translations = {
         "instructions": "👈 Ievadiet detaļas sānu joslā un noklikšķiniet uz 'Ģenerēt Stāstu', lai izveidotu savu personalizēto vakara pasaku.",
         "values_to_teach": "📚 Vērtības vai mācības, ko pasniegt",
         "story_values": "Stāstā mācītās mācības:",
-        "buy_coffee": "Nopērc man kafiju"
+        "buy_coffee": "Nopērc man kafiju",
+        "rate_story": "Vērtējiet šo stāstu",
+        "thank_you_rating": "Paldies par jūsu vērtējumu!",
+        "submit_rating": "Iesniegt Vērtējumu",
+        "general_help_text": "📝 Šī lietotne ģenerē mākslīgā intelekta radītus vakara stāstus, pamatojoties uz jūsu ievadi. Stāsti tiek veidoti reālajā laikā un netiek saglabāti."
     },
     "Suomi": {
         "title": "🌙 Iltasadun Kertoja",
@@ -107,7 +127,11 @@ translations = {
         "instructions": "👈 Syötä tiedot sivupalkissa ja napsauta 'Luo Tarina' luodaksesi personoidun iltasatusi.",
         "values_to_teach": "📚 Opetettavat arvot tai opetukset",
         "story_values": "Tarinassa opetetut opetukset:",
-        "buy_coffee": "Osta minulle kahvi"
+        "buy_coffee": "Osta minulle kahvi",
+        "rate_story": "Arvioi tämä tarina",
+        "thank_you_rating": "Kiitos arvostelustasi!",
+        "submit_rating": "Lähetä Arvostelu",
+        "general_help_text": "📝 Tämä sovellus luo tekoälyllä tuotettuja iltasatuja antamiesi tietojen perusteella. Tarinat luodaan reaaliajassa eikä niitä tallenneta."
     },
     "Русский": {
         "title": "🌙 Рассказчик Сказок на Ночь",
@@ -125,9 +149,14 @@ translations = {
         "instructions": "👈 Введите детали в боковой панели и нажмите 'Создать Сказку', чтобы создать свою персонализированную сказку на ночь.",
         "values_to_teach": "📚 Ценности или уроки для обучения",
         "story_values": "Уроки, преподанные в сказке:",
-        "buy_coffee": "Купи мне кофе"
+        "buy_coffee": "Купи мне кофе",
+        "rate_story": "Оцените эту сказку",
+        "thank_you_rating": "Спасибо за вашу оценку!",
+        "submit_rating": "Отправить Оценку",
+        "general_help_text": "📝 Это приложение генерирует сказки на ночь с помощью ИИ на основе вашего ввода. Истории создаются в реальном времени и не сохраняются."
     }
 }
+
 def get_text(key):
     return translations[st.session_state.language][key]
 
@@ -149,15 +178,16 @@ def generate_story(children_info, story_details, language):
     prompt = f"""Create a bedtime story for the following children:
     {children_info}
     
-    Story details: {story_details}
+    {story_details if story_details else "Create an imaginative story suitable for children."}
     
-    The story should be educational and specifically teach the following values: {values_to_teach}.
-    Make sure these values are central to the story's plot and characters' actions.
-    Incorporate the mentioned activities, toys, and events into the story.
     Please write the story in {language}.
     
     The story should be {complexity}, as the average age of the children is {avg_age:.1f} years old.
-    Adjust the language, concepts, and storyline to be engaging and understandable for children of this age group."""
+    Adjust the language, concepts, and storyline to be engaging and understandable for children of this age group.
+    
+    If no specific details were provided, create an imaginative and engaging story that focuses on universal themes like friendship, kindness, or curiosity. Use the children's names and ages to personalize the story.
+    
+    Ensure the story has a clear beginning, middle, and end, with a positive message or lesson appropriate for children."""
 
     if selected_model == "gpt-4o" or selected_model == "gpt-4o-mini":
         response = openai.ChatCompletion.create(
@@ -183,6 +213,34 @@ def generate_story(children_info, story_details, language):
     else:
         raise ValueError(f"Unsupported model: {selected_model}")
 
+def insert_usage_stats(selected_language, num_children, ages, values_to_teach, selected_model):
+    current_time = datetime.now().isoformat()
+    data = {
+        "datetime": current_time,
+        "selected_language": selected_language,
+        "num_children": num_children,
+        "ages": ages,
+        "values_to_teach": values_to_teach,
+        "selected_model": selected_model
+    }
+    try:
+        response = supabase.table("usage_stats").insert(data).execute()
+        return response.data[0]['id']
+    except Exception:
+        return None
+
+def update_rating(row_id, rating):
+    try:
+        rating_str = str(rating)
+        supabase.table("usage_stats").update({"rating": rating_str}).eq("id", row_id).execute()
+    except Exception:
+        pass
+
+# Initialize session state variables
+if 'story' not in st.session_state:
+    st.session_state.story = None
+if 'row_id' not in st.session_state:
+    st.session_state.row_id = None
 
 # Initialize session state for language
 if 'language' not in st.session_state:
@@ -197,7 +255,7 @@ selected_language = st.sidebar.selectbox(
 
 if selected_language != st.session_state.language:
     st.session_state.language = selected_language
-    st.experimental_rerun()
+    st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
 
 # Add header image
 image_path = os.path.join("static", "images", "header.png")
@@ -226,28 +284,62 @@ with st.sidebar:
 
     generate_button = st.button(get_text("generate_button"))
 
-story_details = f"""
-Activities, toys, and events: {activities_and_toys}
-Values to teach: {values_to_teach}
-"""
+story_details = ""
+
+if activities_and_toys.strip():
+    story_details += f"Activities, toys, and events: {activities_and_toys}\n"
+
+if values_to_teach.strip():
+    story_details += f"Values to teach: {values_to_teach}\n"
+
+if not story_details:
+    story_details = ""
 
 # Main area for displaying the story
 if generate_button:
     with st.spinner(get_text("creating_story")):
         children_info_str = "\n".join(children_info)
-        story = generate_story(children_info_str, story_details, st.session_state.language)
+        story_details = f"Activities and toys: {activities_and_toys}\nValues to teach: {values_to_teach}" if activities_and_toys or values_to_teach else ""
+        st.session_state.story = generate_story(children_info_str, story_details, st.session_state.language)
+    
+    # Insert usage stats immediately after generating the story
+    ages = ",".join([info.split(',')[1].strip().split()[0] for info in children_info])
+    st.session_state.row_id = insert_usage_stats(st.session_state.language, num_children, ages, values_to_teach, selected_model)
+
+if st.session_state.story:
     st.subheader(get_text("your_story"))
     
-    # Display the story and values side by side
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        st.write(story)
-    with col2:
-        st.subheader(get_text("story_values"))
-        for value in values_to_teach.split(','):
-            st.write(f"• {value.strip()}")
+    # Display the story and values side by side only if values are provided
+    if values_to_teach.strip():
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.write(st.session_state.story)
+        with col2:
+            st.subheader(get_text("story_values"))
+            for value in values_to_teach.split(','):
+                st.write(f"• {value.strip()}")
+    else:
+        st.write(st.session_state.story)
+    
+    # Add feedback widget
+    st.markdown("---")  # Add a horizontal line for separation
+    st.markdown(f"<i>{get_text('rate_story')}</i>", unsafe_allow_html=True)  # Use italic text
+    feedback = st.feedback(
+        options="stars",
+        key=f"feedback_{st.session_state.row_id}"
+    )
+    
+    if feedback is not None:
+        rating = feedback + 1  # Convert 0-4 scale to 1-5 scale
+        update_rating(st.session_state.row_id, rating)
+        st.success(get_text("thank_you_rating"))
+
 else:
     st.write(get_text("instructions"))
+
+# Add some space before the Buy Me a Coffee button
+st.markdown("<br><br>", unsafe_allow_html=True)
+
 # Buy Me a Coffee button
 st.markdown(
     f"""
@@ -257,3 +349,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+# Add general help text using markdown with small font and italic styling
+st.markdown(f"<br><p style='font-size: 12px; font-style: italic;'>{get_text('general_help_text')}</p>", unsafe_allow_html=True)
+
