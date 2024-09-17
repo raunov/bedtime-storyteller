@@ -1,15 +1,15 @@
 # Bedtime Story Generator
 
-This Streamlit app generates personalized bedtime stories for children using AI models. It supports multiple languages and allows users to input details about the children, their interests, and values to be taught in the story.
+This Streamlit app generates personalized bedtime stories for children using AI language models. It supports multiple languages and allows users to input details about the children, their interests, and values to be taught in the story.
 
 ## Features
 
-- 🌍 Supports multiple languages: English, Spanish, Estonian, Latvian, Finnish, and Russian
+- 🌍 Supports multiple languages: English, Spanish, Estonian, Finnish, and Russian
 - 👧👦 Customizable for multiple children
 - 🧸 Incorporates children's favorite toys and activities
 - 📚 Focuses on specific values you want to teach
 - 🎨 Adjusts story complexity based on the child's age
-- 🖊️ Powered by OpenAI's GPT-4 for creative and engaging stories
+- 🖊️ Powered by OpenAI's GPT-4 or Anthropic's Claude for creative and engaging stories
 - 📊 Stores usage statistics in a Supabase database
 - 🌟 Allows users to rate generated stories
 
@@ -37,6 +37,7 @@ This Streamlit app generates personalized bedtime stories for children using AI 
    MODEL = "your_selected_model"
    SUPABASE_URL = "your_supabase_project_url"
    SUPABASE_KEY = "your_supabase_api_key"
+   DEFAULT_LANGUAGE = "English"
    ```
    Replace the placeholder values with your actual API keys and URLs.
 
@@ -53,10 +54,6 @@ This Streamlit app generates personalized bedtime stories for children using AI 
 4. Specify the values or lessons you want to teach in the story.
 5. Click the "Generate Story" button to create a personalized bedtime story.
 6. After reading the story, you can rate it using the feedback widget.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
