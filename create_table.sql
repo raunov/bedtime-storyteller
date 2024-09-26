@@ -6,7 +6,9 @@ CREATE TABLE usage_stats (
     ages TEXT NOT NULL,
     values_to_teach TEXT NOT NULL,
     selected_model TEXT NOT NULL,
-    rating TEXT
+    rating TEXT,
+    moderated_inputs JSONB,
+    generation_time NUMERIC(5,1)  -- Add this line
 );
 
 -- Add a comment to the table
@@ -21,6 +23,10 @@ COMMENT ON COLUMN usage_stats.ages IS 'Comma-separated list of ages of the child
 COMMENT ON COLUMN usage_stats.values_to_teach IS 'Values or lessons to be taught in the story';
 COMMENT ON COLUMN usage_stats.selected_model IS 'AI model used to generate the story';
 COMMENT ON COLUMN usage_stats.rating IS 'User feedback rating for the generated story';
+COMMENT ON COLUMN usage_stats.generation_time IS 'Time taken to generate the story in seconds';
 
--- Create an index on the datetime column for faster queries
-CREATE INDEX idx_usage_stats_datetime ON usage_stats(datetime);
+-- Add indexes for better query performance
+CREATE INDEX IF NOT EXISTS idx_usage_stats_datetime ON usage_stats (datetime);
+CREATE INDEX IF NOT EXISTS idx_usage_stats_selected_language ON usage_stats (selected_language);
+CREATE INDEX IF NOT EXISTS idx_usage_stats_selected_model ON usage_stats (selected_model);
+CREATE INDEX IF NOT EXISTS idx_usage_stats_generation_time ON usage_stats (generation_time);

@@ -4,12 +4,12 @@ This Streamlit app generates personalized bedtime stories for children using AI 
 
 ## Features
 
-- 🌍 Supports multiple languages: English, Spanish, Estonian, Finnish, and Russian
+- 🌍 Supports multiple languages: English, Spanish, Estonian, Finnish, Russian, and Arabic
 - 👧👦 Customizable for multiple children
 - 🧸 Incorporates children's favorite toys and activities
 - 📚 Focuses on specific values you want to teach
 - 🎨 Adjusts story complexity based on the child's age
-- 🖊️ Powered by OpenAI's GPT-4 or Anthropic's Claude for creative and engaging stories
+- 🖊️ Powered by OpenAI's GPT-4, Anthropic's Claude, or Google's Gemini 1.5 Pro for creative and engaging stories
 - 📊 Stores usage statistics in a Supabase database
 - 🌟 Allows users to rate generated stories
 
@@ -34,7 +34,8 @@ This Streamlit app generates personalized bedtime stories for children using AI 
    ```toml
    OPENAI_API_KEY = "your_openai_api_key"
    ANTHROPIC_API_KEY = "your_anthropic_api_key"
-   MODEL = "your_selected_model"
+   GOOGLE_API_KEY = "your_google_api_key"
+   MODEL = "your_selected_model"  # Options: "gpt-4o", "gpt-4o-mini", "claude-3-5-sonnet-20240620", or "gemini-1.5-pro"
    SUPABASE_URL = "your_supabase_project_url"
    SUPABASE_KEY = "your_supabase_api_key"
    DEFAULT_LANGUAGE = "English"

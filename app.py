@@ -1,10 +1,17 @@
 import streamlit as st
 import openai
 import anthropic
+import google.generativeai as genai
 import os
 from datetime import datetime
 from supabase import create_client, Client
 import json
+import random
+import time
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.ERROR, format='%(asctime)s %(levelname)s %(message)s')
 
 # Load translations from JSON file
 with open('translations.json', 'r', encoding='utf-8') as f:
@@ -26,9 +33,12 @@ st.set_page_config(
 # Set up API keys
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 anthropic_api_key = st.secrets["ANTHROPIC_API_KEY"]
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
-# Get the model from secrets.toml
-selected_model = st.secrets["MODEL"]
+# Get the model from secrets.toml or choose randomly
+selected_model = st.secrets.get("MODEL")
+if not selected_model:
+    selected_model = random.choice(["claude-3-5-sonnet-20240620", "gpt-4o", "gemini-1.5-pro"])
 
 # Set up Supabase client
 supabase: Client = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
@@ -51,53 +61,69 @@ def generate_story(children_info, story_details, language):
     else:
         complexity = "more sophisticated with advanced vocabulary and complex storylines"
 
-    prompt = f"""You are a child-friendly storyteller. Your task is to create a bedtime story based on the following information:
+    prompt = f"""You are a child-friendly storyteller. Your task is to create a 10 minute bedtime story based on the following information:
 
     Children: {children_info}
     
     Story details: {story_details if story_details else "Create an imaginative story suitable for children."}
     
-    Before creating the story, please check if any of the inputs (names, activities, toys, or values) are inappropriate or too controversial for children. If you find any such content, respond with "MODERATED_CONTENT" followed by a brief explanation.
+    Before creating the story, please check if any of the inputs (names, activities, toys, or values) are inappropriate or too controversial for children. 
+    If you find any such content, respond with "MODERATED_CONTENT" followed by a brief explanation.
 
-    If the content is appropriate, please write the story in {language}.
+    If the content is appropriate, please just write the story in {language} language.
     
-    The story should be {complexity}, as the average age of the children is {avg_age:.1f} years old.
+    The story should be {complexity}, as the average age of the children is {avg_age:.1f} years old and the story should be 10 minutes long. 
     Adjust the language, concepts, and storyline to be engaging and understandable for children of this age group.
     
-    If no specific details were provided, create an imaginative and engaging story that focuses on universal themes like friendship, kindness, or curiosity. Use the children's names and ages to personalize the story.
-    
-    Ensure the story has a clear beginning, middle, and end, with a positive message or lesson appropriate for children."""
+    If the story details include toys, you should focus on them as the protagonists of the story.
+    The story should be in a calm and gentle tone, clear and simple narrative and reassuring tone that adresses any fears or worries.
+    Ensure the story has a clear beginning, middle, and end, with a positive message or lesson appropriate for children.
+    If no specific details were provided, create an imaginative and engaging story that focuses on universal themes like friendship, kindness, courage, or curiosity.
+    """
 
-    if selected_model == "gpt-4o" or selected_model == "gpt-4o-mini":
-        response = openai.ChatCompletion.create(
-            model=selected_model,
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=1000,
-            n=1,
-            stop=None,
-            temperature=0.7,
-        )
-        story = response.choices[0].message.content
-    elif selected_model == "claude-3-5-sonnet-20240620":
-        client = anthropic.Anthropic(api_key=anthropic_api_key)
-        response = client.messages.create(
-            model="claude-3-5-sonnet-20240620",
-            max_tokens=1000,
-            temperature=0.7,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
-        )
-        story = response.content[0].text
-    else:
-        raise ValueError(f"Unsupported model: {selected_model}")
+    start_time = time.time()  # Start timing
+
+    try:
+        if selected_model == "gpt-4o" or selected_model == "gpt-4o-mini":
+            response = openai.chat.completions.create(
+                model=selected_model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=1000,
+                n=1,
+                stop=None,
+                temperature=0.7,
+            )
+            story = response.choices[0].message.content
+        elif selected_model == "claude-3-5-sonnet-20240620":
+            client = anthropic.Anthropic(api_key=anthropic_api_key)
+            response = client.messages.create(
+                model="claude-3-5-sonnet-20240620",
+                max_tokens=1000,
+                temperature=0.7,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
+            )
+            story = response.content[0].text
+        elif selected_model == "gemini-1.5-pro":
+            genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+            model = genai.GenerativeModel("gemini-1.5-pro")
+            response = model.generate_content(prompt)
+            story = response.text
+        else:
+            raise ValueError(f"Unsupported model: {selected_model}")
+    except Exception as e:
+        logging.error(f"Error generating story: {e}")
+        raise ValueError("An error occurred while generating the story. Please try again later.")
+
+    generation_time = round(time.time() - start_time, 1)  # End timing and round to 1 decimal place
 
     if story.startswith("MODERATED_CONTENT"):
         raise ValueError(story)
     
-    return story
+    return story, generation_time
 
-def insert_usage_stats(selected_language, num_children, ages, values_to_teach, selected_model, moderated=False):
+def insert_usage_stats(selected_language, num_children, ages, values_to_teach, selected_model, generation_time, moderated=False, children_info=None, activities_and_toys=None):
     current_time = datetime.now().isoformat()
     data = {
         "datetime": current_time,
@@ -105,20 +131,31 @@ def insert_usage_stats(selected_language, num_children, ages, values_to_teach, s
         "num_children": num_children,
         "ages": ages,
         "values_to_teach": ("MODERATED: " + values_to_teach) if moderated else values_to_teach,
-        "selected_model": selected_model
+        "selected_model": selected_model,
+        "generation_time": generation_time  # Add generation time to the data
     }
+    
+    if moderated:
+        user_inputs = {
+            "children_info": children_info,
+            "activities_and_toys": activities_and_toys,
+            "values_to_teach": values_to_teach
+        }
+        data["moderated_inputs"] = json.dumps(user_inputs)
+    
     try:
         response = supabase.table("usage_stats").insert(data).execute()
         return response.data[0]['id']
-    except Exception:
+    except Exception as e:
+        logging.error(f"Error inserting usage stats: {e}")
         return None
 
 def update_rating(row_id, rating):
     try:
         rating_str = str(rating)
         supabase.table("usage_stats").update({"rating": rating_str}).eq("id", row_id).execute()
-    except Exception:
-        pass
+    except Exception as e:
+        logging.error(f"Error updating rating: {e}")
 
 # Initialize session state variables
 if 'story' not in st.session_state:
@@ -198,16 +235,26 @@ if generate_button:
         children_info_str = "\n".join(children_info)
         story_details = f"Activities and toys: {activities_and_toys}\nValues to teach: {values_to_teach}" if activities_and_toys or values_to_teach else ""
         try:
-            st.session_state.story = generate_story(children_info_str, story_details, st.session_state.language)
+            st.session_state.story, generation_time = generate_story(children_info_str, story_details, st.session_state.language)
             # Insert usage stats immediately after generating the story
             ages = ",".join([info.split(',')[1].strip().split()[0] for info in children_info])
-            st.session_state.row_id = insert_usage_stats(st.session_state.language, num_children, ages, values_to_teach, selected_model)
+            st.session_state.row_id = insert_usage_stats(st.session_state.language, num_children, ages, values_to_teach, selected_model, generation_time)
         except ValueError as e:
             st.error(f"Error: {str(e)}")
             st.session_state.story = None
-            # Log the moderated content case
+            # Log the moderated content case with all user inputs
             ages = ",".join([info.split(',')[1].strip().split()[0] for info in children_info])
-            st.session_state.row_id = insert_usage_stats(st.session_state.language, num_children, ages, values_to_teach, selected_model, moderated=True)
+            st.session_state.row_id = insert_usage_stats(
+                st.session_state.language, 
+                num_children, 
+                ages, 
+                values_to_teach, 
+                selected_model,
+                0,  # Set generation time to 0 for moderated content
+                moderated=True,
+                children_info=children_info,
+                activities_and_toys=activities_and_toys
+            )
 
 if st.session_state.story:
     st.subheader(get_text("your_story"))
