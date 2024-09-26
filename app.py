@@ -70,7 +70,7 @@ def generate_story(children_info, story_details, language):
     Before creating the story, please check if any of the inputs (names, activities, toys, or values) are inappropriate or too controversial for children. 
     If you find any such content, respond with "MODERATED_CONTENT" followed by a brief explanation.
 
-    If the content is appropriate, please just write the story in {language} language.
+    If the content is appropriate, don't mention the moderation, please just proceed to write the story in {language} language.
     
     The story should be {complexity}, as the average age of the children is {avg_age:.1f} years old and the story should be 10 minutes long. 
     Adjust the language, concepts, and storyline to be engaging and understandable for children of this age group.
