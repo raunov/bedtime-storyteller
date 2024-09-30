@@ -9,16 +9,21 @@ import json
 import random
 import time
 import logging
+from groq import Groq
 
 # Set up logging
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s %(levelname)s %(message)s')
+
+# Helper function to get configuration
+def get_config(key, default=None):
+    return os.environ.get(key) or st.secrets.get(key, default)
 
 # Load translations from JSON file
 with open('translations.json', 'r', encoding='utf-8') as f:
     translations = json.load(f)
 
-# Get the default language from secrets
-default_language = st.secrets.get("DEFAULT_LANGUAGE", "Eesti")
+# Get the default language from config
+default_language = get_config("DEFAULT_LANGUAGE", "Eesti")
 
 # Remove emoji from title
 title_without_emoji = translations[default_language]["title"].split()[1:]
@@ -31,17 +36,18 @@ st.set_page_config(
 )
 
 # Set up API keys
-openai.api_key = st.secrets["OPENAI_API_KEY"]
-anthropic_api_key = st.secrets["ANTHROPIC_API_KEY"]
-genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+openai.api_key = get_config("OPENAI_API_KEY")
+anthropic_api_key = get_config("ANTHROPIC_API_KEY")
+genai.configure(api_key=get_config("GOOGLE_API_KEY"))
+groq_client = Groq(api_key=get_config("GROQ_API_KEY"))
 
-# Get the model from secrets.toml or choose randomly
-selected_model = st.secrets.get("MODEL")
+# Get the model from config or choose randomly
+selected_model = get_config("MODEL")
 if not selected_model:
-    selected_model = random.choice(["claude-3-5-sonnet-20240620", "gpt-4o", "gemini-1.5-pro"])
+    selected_model = random.choice(["claude-3-5-sonnet-20240620", "gpt-4o", "gemini-1.5-pro", "llama-3.2-90b-text-preview"])
 
 # Set up Supabase client
-supabase: Client = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
+supabase: Client = create_client(get_config("SUPABASE_URL"), get_config("SUPABASE_KEY"))
 
 def get_text(key):
     return translations[st.session_state.language][key]
@@ -110,6 +116,19 @@ def generate_story(children_info, story_details, language):
             model = genai.GenerativeModel("gemini-1.5-pro")
             response = model.generate_content(prompt)
             story = response.text
+        elif selected_model == "llama-3.2-90b-text-preview":
+            response = groq_client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    }
+                ],
+                model="llama-3.2-90b-text-preview",
+                temperature=0.7,
+                max_tokens=1000,
+            )
+            story = response.choices[0].message.content
         else:
             raise ValueError(f"Unsupported model: {selected_model}")
     except Exception as e:
@@ -301,4 +320,3 @@ st.markdown(
 )
 # Add general help text using markdown with small font and italic styling
 st.markdown(f"<br><p style='font-size: 12px; font-style: italic;'>{get_text('general_help_text')}</p>", unsafe_allow_html=True)
-
