@@ -223,7 +223,7 @@ with st.sidebar:
     for i in range(num_children):
         st.subheader(f"{get_text('child')} {i+1} 🧒")
         name = st.text_input(f"{get_text('name')} {i+1}", key=f"name_{i}")
-        age = st.slider(f"{get_text('age')} {name}", min_value=1, max_value=12, value=6, key=f"age_{i}")
+        age = st.slider(get_text("age_of_child").format(name=name), min_value=1, max_value=12, value=6, key=f"age_{i}")
         children_info.append(f"{name}, {age} years old")
 
     activities_and_toys = st.text_area(

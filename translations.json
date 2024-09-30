@@ -20,7 +20,8 @@
         "rate_story": "Rate this story",
         "thank_you_rating": "Thank you for your rating!",
         "submit_rating": "Submit Rating",
-        "general_help_text": "📝 This app generates AI-powered bedtime stories based on your input. The stories are created in real-time and are not stored."
+        "general_help_text": "📝 This app generates AI-powered bedtime stories based on your input. The stories are created in real-time and are not stored.",
+        "age_of_child": "{name}'s age"
     },
     "Español": {
         "title": "🌙 Narrador de Cuentos para Dormir",
@@ -43,7 +44,8 @@
         "rate_story": "Califica esta historia",
         "thank_you_rating": "¡Gracias por tu calificación!",
         "submit_rating": "Enviar Calificación",
-        "general_help_text": "📝 Esta aplicación genera cuentos para dormir impulsados por IA basados en tu entrada. Las historias se crean en tiempo real y no se almacenan."
+        "general_help_text": "📝 Esta aplicación genera cuentos para dormir impulsados por IA basados en tu entrada. Las historias se crean en tiempo real y no se almacenan.",
+        "age_of_child": "Edad de {name}"
     },
     "Eesti": {
         "title": "🌙 Unejutuvestja",
@@ -66,7 +68,8 @@
         "rate_story": "Hinda seda lugu",
         "thank_you_rating": "Täname tagasiside eest!",
         "submit_rating": "Esita Hinnang",
-        "general_help_text": "📝 See rakendus genereerib tehisintellekti abil unejutte vastavalt sinu sisendile. Lood luuakse reaalajas ja neid ei salvestata."
+        "general_help_text": "📝 See rakendus genereerib tehisintellekti abil unejutte vastavalt sinu sisendile. Lood luuakse reaalajas ja neid ei salvestata.",
+        "age_of_child": "{name} vanus"
     },
     "Suomi": {
         "title": "🌙 Iltasadun Kertoja",
@@ -89,7 +92,8 @@
         "rate_story": "Arvioi tämä tarina",
         "thank_you_rating": "Kiitos arvostelustasi!",
         "submit_rating": "Lähetä Arvostelu",
-        "general_help_text": "📝 Tämä sovellus luo tekoälyllä tuotettuja iltasatuja antamiesi tietojen perusteella. Tarinat luodaan reaaliajassa eikä niitä tallenneta."
+        "general_help_text": "📝 Tämä sovellus luo tekoälyllä tuotettuja iltasatuja antamiesi tietojen perusteella. Tarinat luodaan reaaliajassa eikä niitä tallenneta.",
+        "age_of_child": "{name}n ikä"
     },
     "Русский": {
         "title": "🌙 Рассказчик Сказок на Ночь",
@@ -112,6 +116,7 @@
         "rate_story": "Оцените эту сказку",
         "thank_you_rating": "Спасибо за вашу оценку!",
         "submit_rating": "Отправить Оценку",
-        "general_help_text": "📝 Это приложение генерирует сказки на ночь с помощью ИИ на основе вашего ввода. Истории создаются в реальном времени и не сохраняются."
+        "general_help_text": "📝 Это приложение генерирует сказки на ночь с помощью ИИ на основе вашего ввода. Истории создаются в реальном времени и не сохраняются.",
+        "age_of_child": "Возраст {name}"
     }
 }
