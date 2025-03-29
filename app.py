@@ -209,7 +209,7 @@ st.markdown(
 
 # Add header image
 image_path = os.path.join("static", "images", "header.png")
-st.image(image_path, use_column_width=True)
+st.image(image_path,use_container_width=True)
 
 st.title(get_text("title"))
 
