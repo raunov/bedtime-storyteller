@@ -100,10 +100,10 @@ def generate_story(children_info, story_details, language):
                 temperature=0.7,
             )
             story = response.choices[0].message.content
-        elif selected_model == "claude-3-5-sonnet-20240620":
+        elif selected_model == "claude":
             client = anthropic.Anthropic(api_key=anthropic_api_key)
             response = client.messages.create(
-                model="claude-3-5-sonnet-20240620",
+                model="claude-3-7-sonnet-20250219",
                 max_tokens=1000,
                 temperature=0.7,
                 messages=[
@@ -111,9 +111,9 @@ def generate_story(children_info, story_details, language):
                 ]
             )
             story = response.content[0].text
-        elif selected_model == "gemini-1.5-pro":
+        elif selected_model == "gemini":
             genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-            model = genai.GenerativeModel("gemini-1.5-pro")
+            model = genai.GenerativeModel("gemini-2.5-pro-exp-03-25")
             response = model.generate_content(prompt)
             story = response.text
         elif selected_model == "llama-3.2-90b-text-preview":

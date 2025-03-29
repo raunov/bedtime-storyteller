@@ -35,7 +35,7 @@ This Streamlit app generates personalized bedtime stories for children using AI 
    OPENAI_API_KEY = "your_openai_api_key"
    ANTHROPIC_API_KEY = "your_anthropic_api_key"
    GOOGLE_API_KEY = "your_google_api_key"
-   MODEL = "your_selected_model"  # Options: "gpt-4o", "gpt-4o-mini", "claude-3-5-sonnet-20240620", or "gemini-1.5-pro"
+   MODEL = "your_selected_model"  # Options: "gpt-4o", "claude", or "gemini"
    SUPABASE_URL = "your_supabase_project_url"
    SUPABASE_KEY = "your_supabase_api_key"
    DEFAULT_LANGUAGE = "English"
