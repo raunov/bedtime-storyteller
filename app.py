@@ -94,7 +94,7 @@ def generate_story(children_info, story_details, language):
             response = openai.chat.completions.create(
                 model=selected_model,
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=1000,
+                max_completion_tokens=1000,
                 n=1,
                 stop=None,
                 temperature=0.7,
@@ -104,7 +104,7 @@ def generate_story(children_info, story_details, language):
             client = anthropic.Anthropic(api_key=anthropic_api_key)
             response = client.messages.create(
                 model="claude-3-7-sonnet-20250219",
-                max_tokens=1000,
+                max_completion_tokens=1000,
                 temperature=0.7,
                 messages=[
                     {"role": "user", "content": prompt}
@@ -126,7 +126,7 @@ def generate_story(children_info, story_details, language):
                 ],
                 model="llama-3.2-90b-text-preview",
                 temperature=0.7,
-                max_tokens=1000,
+                max_completion_tokens=1000,
             )
             story = response.choices[0].message.content
         else:
