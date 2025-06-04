@@ -18,7 +18,7 @@ This Streamlit app generates personalized bedtime stories for children using AI 
 1. Clone this repository:
    ```
    git clone https://github.com/raunov/bedtime-storyteller.git
-   cd bedtime-story-generator
+   cd bedtime-storyteller
    ```
 
 2. Install the required packages:
