@@ -82,7 +82,7 @@ def generate_story(children_info, story_details, language):
     Adjust the language, concepts, and storyline to be engaging and understandable for children of this age group.
     
     If the story details include toys, you should focus on them as the protagonists of the story.
-    The story should be in a calm and gentle tone, clear and simple narrative and reassuring tone that adresses any fears or worries.
+    The story should be in a calm and gentle tone, clear and simple narrative and reassuring tone that addresses any fears or worries.
     Ensure the story has a clear beginning, middle, and end, with a positive message or lesson appropriate for children.
     If no specific details were provided, create an imaginative and engaging story that focuses on universal themes like friendship, kindness, courage, or curiosity.
     """
