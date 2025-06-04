@@ -47,6 +47,14 @@ This Streamlit app generates personalized bedtime stories for children using AI 
    streamlit run app.py
    ```
 
+## Testing
+
+Run the test suite with [pytest](https://pytest.org):
+
+```bash
+pytest
+```
+
 ## Usage
 
 1. Select your preferred language from the dropdown menu.
