@@ -44,7 +44,7 @@ groq_client = Groq(api_key=get_config("GROQ_API_KEY"))
 # Get the model from config or choose randomly
 selected_model = get_config("MODEL")
 if not selected_model:
-    selected_model = random.choice(["claude-3-5-sonnet-20240620", "gpt-4.1", "gemini-1.5-pro", "llama-3.2-90b-text-preview"])
+    selected_model = random.choice(["claude-3-5-sonnet-20240620", "gpt-5-mini", "gemini-2.5-pro", "llama-3.2-90b-text-preview"])
 
 # Set up Supabase client
 supabase: Client = create_client(get_config("SUPABASE_URL"), get_config("SUPABASE_KEY"))
@@ -90,7 +90,7 @@ def generate_story(children_info, story_details, language):
     start_time = time.time()  # Start timing
 
     try:
-        if selected_model == "gpt-4.1" or selected_model == "o3-mini":
+        if selected_model == "gpt-5-mini" or selected_model == "o3-mini":
             response = openai.chat.completions.create(
                 model=selected_model,
                 messages=[{"role": "user", "content": prompt}],
