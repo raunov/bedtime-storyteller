@@ -9,7 +9,7 @@ This Streamlit app generates personalized bedtime stories for children using AI 
 - 🧸 Incorporates children's favorite toys and activities
 - 📚 Focuses on specific values you want to teach
 - 🎨 Adjusts story complexity based on the child's age
-- 🖊️ Powered by OpenAI's GPT-4, Anthropic's Claude, or Google's Gemini 1.5 Pro for creative and engaging stories
+- 🖊️ Powered by a wide variety of language models via [OpenRouter](https://openrouter.ai/) for creative and engaging stories
 - 📊 Stores usage statistics in a Supabase database
 - 🌟 Allows users to rate generated stories
 
@@ -32,10 +32,8 @@ This Streamlit app generates personalized bedtime stories for children using AI 
 
 4. Set up your `.streamlit/secrets.toml` file with the following content:
    ```toml
-   OPENAI_API_KEY = "your_openai_api_key"
-   ANTHROPIC_API_KEY = "your_anthropic_api_key"
-   GOOGLE_API_KEY = "your_google_api_key"
-   MODEL = "your_selected_model"  # Options: "gpt-4o", "claude", or "gemini"
+   OPENROUTER_API_KEY = "your_openrouter_api_key"
+   MODEL = "your_selected_model"  # Optional: specify a model from OpenRouter, e.g., "openai/gpt-4o"
    SUPABASE_URL = "your_supabase_project_url"
    SUPABASE_KEY = "your_supabase_api_key"
    DEFAULT_LANGUAGE = "English"
