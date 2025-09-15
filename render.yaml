@@ -8,14 +8,12 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
-      - key: OPENAI_API_KEY
+      - key: OPENROUTER_API_KEY
         sync: false
-      - key: ANTHROPIC_API_KEY
+      - key: OPENROUTER_SITE_URL
         sync: false
-      - key: GOOGLE_API_KEY
-        sync: false
-      - key: GROQ_API_KEY
-        sync: false
+      - key: OPENROUTER_APP_NAME
+        value: Bedtime Storyteller
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_KEY

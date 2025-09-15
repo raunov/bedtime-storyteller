@@ -9,7 +9,7 @@ This Streamlit app generates personalized bedtime stories for children using AI 
 - 🧸 Incorporates children's favorite toys and activities
 - 📚 Focuses on specific values you want to teach
 - 🎨 Adjusts story complexity based on the child's age
-- 🖊️ Powered by OpenAI's GPT-4, Anthropic's Claude, or Google's Gemini 1.5 Pro for creative and engaging stories
+- 🖊️ Powered by OpenRouter so you can use top-tier models like GPT-5, Claude Sonnet 4, Gemini 2.5 Pro, and Grok 4
 - 📊 Stores usage statistics in a Supabase database
 - 🌟 Allows users to rate generated stories
 
@@ -32,15 +32,15 @@ This Streamlit app generates personalized bedtime stories for children using AI 
 
 4. Set up your `.streamlit/secrets.toml` file with the following content:
    ```toml
-   OPENAI_API_KEY = "your_openai_api_key"
-   ANTHROPIC_API_KEY = "your_anthropic_api_key"
-   GOOGLE_API_KEY = "your_google_api_key"
-   MODEL = "your_selected_model"  # Options: "gpt-4o", "claude", or "gemini"
+   OPENROUTER_API_KEY = "your_openrouter_api_key"
+   OPENROUTER_SITE_URL = "https://yourapp.example.com"  # Optional but recommended for rate-limits
+   OPENROUTER_APP_NAME = "Bedtime Storyteller"           # Optional title shown in OpenRouter analytics
+   MODEL = "anthropic/claude-sonnet-4"                   # Or any other OpenRouter model slug/alias
    SUPABASE_URL = "your_supabase_project_url"
    SUPABASE_KEY = "your_supabase_api_key"
    DEFAULT_LANGUAGE = "English"
    ```
-   Replace the placeholder values with your actual API keys and URLs.
+   Replace the placeholder values with your actual API key, site URL, and Supabase credentials. You can provide either a full OpenRouter model slug (e.g. `openai/gpt-5`) or one of the supported aliases (`gpt-5`, `claude`, `gemini`, `grok`, `llama`).
 
 5. Run the Streamlit app:
    ```

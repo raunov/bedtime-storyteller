@@ -1,7 +1,5 @@
 import streamlit as st
-import openai
-import anthropic
-import google.generativeai as genai
+from openai import OpenAI
 import os
 from datetime import datetime
 from supabase import create_client, Client
@@ -9,7 +7,6 @@ import json
 import random
 import time
 import logging
-from groq import Groq
 
 # Set up logging
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s %(levelname)s %(message)s')
@@ -35,16 +32,62 @@ st.set_page_config(
     page_icon="🌙" 
 )
 
-# Set up API keys
-openai.api_key = get_config("OPENAI_API_KEY")
-anthropic_api_key = get_config("ANTHROPIC_API_KEY")
-genai.configure(api_key=get_config("GOOGLE_API_KEY"))
-groq_client = Groq(api_key=get_config("GROQ_API_KEY"))
+# Constants for OpenRouter
+OPENROUTER_API_URL = "https://openrouter.ai/api/v1"
+MODEL_ALIASES = {
+    "claude": "anthropic/claude-sonnet-4",
+    "claude-sonnet-4": "anthropic/claude-sonnet-4",
+    "claude-3-5-sonnet-20240620": "anthropic/claude-3.5-sonnet",
+    "claude-3.5-sonnet": "anthropic/claude-3.5-sonnet",
+    "gpt-5": "openai/gpt-5",
+    "gpt-4.1": "openai/gpt-4.1",
+    "gpt-4o": "openai/gpt-4o",
+    "o3-mini": "openai/o3-mini",
+    "gemini": "google/gemini-2.5-pro",
+    "gemini-2.5-pro": "google/gemini-2.5-pro",
+    "gemini-1.5-pro": "google/gemini-1.5-pro",
+    "grok": "x-ai/grok-4",
+    "grok-4": "x-ai/grok-4",
+    "llama": "meta-llama/llama-3.1-405b-instruct",
+    "llama-3.2-90b-text-preview": "meta-llama/llama-3.1-405b-instruct",
+}
+DEFAULT_MODEL_POOL = [
+    # Latest flagships from the leading providers on OpenRouter
+    "openai/gpt-5",
+    "anthropic/claude-sonnet-4",
+    "google/gemini-2.5-pro",
+    "x-ai/grok-4",
+]
 
-# Get the model from config or choose randomly
-selected_model = get_config("MODEL")
-if not selected_model:
-    selected_model = random.choice(["claude-3-5-sonnet-20240620", "gpt-4.1", "gemini-1.5-pro", "llama-3.2-90b-text-preview"])
+
+def resolve_model_choice(model_name: str | None) -> str:
+    if not model_name:
+        return random.choice(DEFAULT_MODEL_POOL)
+    return MODEL_ALIASES.get(model_name, model_name)
+
+
+selected_model = resolve_model_choice(get_config("MODEL"))
+
+# Configure OpenRouter client
+openrouter_api_key = get_config("OPENROUTER_API_KEY")
+openrouter_client = None
+if openrouter_api_key:
+    default_headers = {}
+    site_url = get_config("OPENROUTER_SITE_URL")
+    if site_url:
+        default_headers["HTTP-Referer"] = site_url
+    app_name = get_config("OPENROUTER_APP_NAME", "Bedtime Storyteller")
+    if app_name:
+        default_headers["X-Title"] = app_name
+
+    client_kwargs = {
+        "base_url": OPENROUTER_API_URL,
+        "api_key": openrouter_api_key,
+    }
+    if default_headers:
+        client_kwargs["default_headers"] = default_headers
+
+    openrouter_client = OpenAI(**client_kwargs)
 
 # Set up Supabase client
 supabase: Client = create_client(get_config("SUPABASE_URL"), get_config("SUPABASE_KEY"))
@@ -90,47 +133,19 @@ def generate_story(children_info, story_details, language):
     start_time = time.time()  # Start timing
 
     try:
-        if selected_model == "gpt-4.1" or selected_model == "o3-mini":
-            response = openai.chat.completions.create(
-                model=selected_model,
-                messages=[{"role": "user", "content": prompt}],
-                max_completion_tokens=1000,
-                n=1,
-                stop=None,
-                temperature=0.7,
-            )
-            story = response.choices[0].message.content
-        elif selected_model == "claude":
-            client = anthropic.Anthropic(api_key=anthropic_api_key)
-            response = client.messages.create(
-                model="claude-3-7-sonnet-20250219",
-                max_completion_tokens=1000,
-                temperature=0.7,
-                messages=[
-                    {"role": "user", "content": prompt}
-                ]
-            )
-            story = response.content[0].text
-        elif selected_model == "gemini":
-            genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-            model = genai.GenerativeModel("gemini-2.5-pro-exp-03-25")
-            response = model.generate_content(prompt)
-            story = response.text
-        elif selected_model == "llama-3.2-90b-text-preview":
-            response = groq_client.chat.completions.create(
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt,
-                    }
-                ],
-                model="llama-3.2-90b-text-preview",
-                temperature=0.7,
-                max_completion_tokens=1000,
-            )
-            story = response.choices[0].message.content
-        else:
-            raise ValueError(f"Unsupported model: {selected_model}")
+        if openrouter_client is None:
+            logging.error("OpenRouter API key is not configured.")
+            raise ValueError("Story generation is currently unavailable. Please contact the administrator.")
+
+        response = openrouter_client.chat.completions.create(
+            model=selected_model,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=1000,
+            temperature=0.7,
+        )
+        story = response.choices[0].message.content
+    except ValueError:
+        raise
     except Exception as e:
         logging.error(f"Error generating story: {e}")
         raise ValueError("An error occurred while generating the story. Please try again later.")
