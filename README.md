@@ -43,7 +43,7 @@ This Streamlit app generates personalized bedtime stories for children using AI 
 
    The value of `PUBLIC_APP_URL` should be the fully qualified domain where your Streamlit app is publicly reachable (including the protocol, typically `https://`). For example, if your deployment lives at `https://stories.example.com`, set `PUBLIC_APP_URL = "https://stories.example.com"`. Streamlit will use this base URL to build absolute Open Graph and Twitter card links for social sharing previews.
 
-6. Run the Streamlit app:
+5. Run the Streamlit app:
    ```
    streamlit run app.py
    ```

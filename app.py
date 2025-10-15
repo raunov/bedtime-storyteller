@@ -227,7 +227,7 @@ st.markdown(
             tag.setAttribute('content', value);
         }}
 
-        metaEntries.forEach(({attr, key, value}) => upsertMeta(attr, key, value));
+        metaEntries.forEach(({{attr, key, value}}) => upsertMeta(attr, key, value));
 
         const canonicalUrl = {json.dumps(canonical_url)};
         if (canonicalUrl) {{
