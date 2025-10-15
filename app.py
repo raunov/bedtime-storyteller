@@ -7,6 +7,7 @@ import json
 import random
 import time
 import logging
+from urllib.parse import urljoin
 
 # Set up logging
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s %(levelname)s %(message)s')
@@ -22,9 +23,27 @@ with open('translations.json', 'r', encoding='utf-8') as f:
 # Get the default language from config
 default_language = get_config("DEFAULT_LANGUAGE", "Eesti")
 
-# Remove emoji from title
-title_without_emoji = translations[default_language]["title"].split()[1:]
-title_without_emoji = " ".join(title_without_emoji)
+# Ensure language is initialized in session state
+if "language" not in st.session_state:
+    st.session_state.language = default_language
+
+def strip_leading_symbol(title: str) -> str:
+    parts = title.split()
+    if len(parts) > 1:
+        return " ".join(parts[1:])
+    return title
+
+# Determine localized metadata
+english_translation = translations["English"]
+current_translation = translations.get(st.session_state.get("language", default_language), english_translation)
+localized_title = current_translation.get("title", english_translation.get("title", "Bedtime Storyteller"))
+title_without_emoji = strip_leading_symbol(localized_title)
+meta_description = current_translation.get("meta_description") or english_translation.get("meta_description", "")
+
+public_app_url = get_config("PUBLIC_APP_URL") or get_config("APP_URL") or ""
+canonical_url = public_app_url.rstrip("/") if public_app_url else ""
+image_url = urljoin(canonical_url + "/", "static/images/social-preview.png") if canonical_url else ""
+image_url_versioned = f"{image_url}?v=1" if image_url else ""
 
 # Set page config once at the beginning
 st.set_page_config(
@@ -153,10 +172,6 @@ if 'story' not in st.session_state:
 if 'row_id' not in st.session_state:
     st.session_state.row_id = None
 
-# Initialize session state for language
-if 'language' not in st.session_state:
-    st.session_state.language = default_language
-
 # Language selection using selectbox
 selected_language = st.sidebar.selectbox(
     get_text("language_select"),
@@ -168,11 +183,62 @@ if selected_language != st.session_state.language:
     st.session_state.language = selected_language
     st.rerun()  # This will rerun the script with the new language
 
-# Update the page title using JavaScript
+# Update the page title and social metadata using JavaScript
+meta_entries = [
+    {"attr": "property", "key": "og:title", "value": localized_title},
+    {"attr": "property", "key": "og:description", "value": meta_description},
+    {"attr": "property", "key": "og:type", "value": "website"},
+    {"attr": "name", "key": "twitter:card", "value": "summary_large_image"},
+    {"attr": "name", "key": "twitter:title", "value": localized_title},
+    {"attr": "name", "key": "twitter:description", "value": meta_description},
+]
+
+if canonical_url:
+    meta_entries.append({"attr": "property", "key": "og:url", "value": canonical_url})
+    meta_entries.append({"attr": "name", "key": "twitter:url", "value": canonical_url})
+
+if image_url_versioned:
+    meta_entries.extend([
+        {"attr": "property", "key": "og:image", "value": image_url_versioned},
+        {"attr": "property", "key": "og:image:secure_url", "value": image_url_versioned},
+        {"attr": "property", "key": "og:image:width", "value": "1200"},
+        {"attr": "property", "key": "og:image:height", "value": "630"},
+        {"attr": "name", "key": "twitter:image", "value": image_url_versioned},
+    ])
+
 st.markdown(
     f"""
     <script>
-        document.title = "{title_without_emoji}";
+        const documentTitle = {json.dumps(title_without_emoji)};
+        document.title = documentTitle;
+
+        const metaEntries = {json.dumps(meta_entries)};
+        function upsertMeta(attr, key, value) {{
+            if (!value) {{
+                return;
+            }}
+            const selector = `meta[${{attr}}="${{key}}"]`;
+            let tag = document.head.querySelector(selector);
+            if (!tag) {{
+                tag = document.createElement('meta');
+                tag.setAttribute(attr, key);
+                document.head.appendChild(tag);
+            }}
+            tag.setAttribute('content', value);
+        }}
+
+        metaEntries.forEach(({{attr, key, value}}) => upsertMeta(attr, key, value));
+
+        const canonicalUrl = {json.dumps(canonical_url)};
+        if (canonicalUrl) {{
+            let link = document.head.querySelector('link[rel="canonical"]');
+            if (!link) {{
+                link = document.createElement('link');
+                link.setAttribute('rel', 'canonical');
+                document.head.appendChild(link);
+            }}
+            link.setAttribute('href', canonicalUrl);
+        }}
     </script>
     """,
     unsafe_allow_html=True
