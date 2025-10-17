@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from supabase import create_client, Client
 import json
+import html
 import random
 import time
 import logging
@@ -183,61 +184,47 @@ if selected_language != st.session_state.language:
     st.session_state.language = selected_language
     st.rerun()  # This will rerun the script with the new language
 
-# Update the page title and social metadata using JavaScript
-meta_entries = [
-    {"attr": "property", "key": "og:title", "value": localized_title},
-    {"attr": "property", "key": "og:description", "value": meta_description},
-    {"attr": "property", "key": "og:type", "value": "website"},
-    {"attr": "name", "key": "twitter:card", "value": "summary_large_image"},
-    {"attr": "name", "key": "twitter:title", "value": localized_title},
-    {"attr": "name", "key": "twitter:description", "value": meta_description},
+# Render static meta tags for crawlers and social sharing
+escaped_title = html.escape(localized_title, quote=True)
+escaped_description = html.escape(meta_description, quote=True) if meta_description else ""
+escaped_canonical_url = html.escape(canonical_url, quote=True) if canonical_url else ""
+escaped_image_url = html.escape(image_url_versioned, quote=True) if image_url_versioned else ""
+
+meta_tags = [
+    f'<meta property="og:title" content="{escaped_title}">',
+    f'<meta property="og:description" content="{escaped_description}">' if escaped_description else "",
+    '<meta property="og:type" content="website">',
+    '<meta name="twitter:card" content="summary_large_image">',
+    f'<meta name="twitter:title" content="{escaped_title}">',
+    f'<meta name="twitter:description" content="{escaped_description}">' if escaped_description else "",
 ]
 
 if canonical_url:
-    meta_entries.append({"attr": "property", "key": "og:url", "value": canonical_url})
-    meta_entries.append({"attr": "name", "key": "twitter:url", "value": canonical_url})
+    meta_tags.append(f'<meta property="og:url" content="{escaped_canonical_url}">')
+    meta_tags.append(f'<link rel="canonical" href="{escaped_canonical_url}">')
+    meta_tags.append(f'<meta name="twitter:url" content="{escaped_canonical_url}">')
 
 if image_url_versioned:
-    meta_entries.extend([
-        {"attr": "property", "key": "og:image", "value": image_url_versioned},
-        {"attr": "property", "key": "og:image:secure_url", "value": image_url_versioned},
-        {"attr": "property", "key": "og:image:width", "value": "1200"},
-        {"attr": "property", "key": "og:image:height", "value": "630"},
-        {"attr": "name", "key": "twitter:image", "value": image_url_versioned},
+    meta_tags.extend([
+        f'<meta property="og:image" content="{escaped_image_url}">',
+        f'<meta property="og:image:secure_url" content="{escaped_image_url}">',
+        '<meta property="og:image:width" content="1200">',
+        '<meta property="og:image:height" content="630">',
+        f'<meta name="twitter:image" content="{escaped_image_url}">',
     ])
 
+# Filter out any empty strings in case optional content is missing
+meta_tags = [tag for tag in meta_tags if tag]
+
+st.markdown("\n".join(meta_tags), unsafe_allow_html=True)
+
+# Update the document title for the rendered page
 st.markdown(
     f"""
     <script>
         const documentTitle = {json.dumps(title_without_emoji)};
-        document.title = documentTitle;
-
-        const metaEntries = {json.dumps(meta_entries)};
-        function upsertMeta(attr, key, value) {{
-            if (!value) {{
-                return;
-            }}
-            const selector = `meta[${{attr}}="${{key}}"]`;
-            let tag = document.head.querySelector(selector);
-            if (!tag) {{
-                tag = document.createElement('meta');
-                tag.setAttribute(attr, key);
-                document.head.appendChild(tag);
-            }}
-            tag.setAttribute('content', value);
-        }}
-
-        metaEntries.forEach(({{attr, key, value}}) => upsertMeta(attr, key, value));
-
-        const canonicalUrl = {json.dumps(canonical_url)};
-        if (canonicalUrl) {{
-            let link = document.head.querySelector('link[rel="canonical"]');
-            if (!link) {{
-                link = document.createElement('link');
-                link.setAttribute('rel', 'canonical');
-                document.head.appendChild(link);
-            }}
-            link.setAttribute('href', canonicalUrl);
+        if (document.title !== documentTitle) {{
+            document.title = documentTitle;
         }}
     </script>
     """,
